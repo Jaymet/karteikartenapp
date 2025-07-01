@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Testergebnis: {{ test_data.set_title }}{% endblock %}
+
+{% block content %}
+<h2>Testergebnis für: {{ test_data.set_title }}</h2>
+
+<p>Du hast <strong>{{ test_data.score }}</strong> von <strong>{{ test_data.questions | length }}</strong> Fragen richtig beantwortet.</p>
+
+{% if test_data.questions %}
+    <h3>Detailauswertung:</h3>
+    <ul class="test-results-list">
+        {% for question_result in test_data.questions %}
+            <li class="{{ 'correct-answer' if question_result.is_correct else 'incorrect-answer' }}">
+                <strong>Frage:</strong> {{ question_result.term }}<br>
+                <em>Deine Antwort:</em> {{ question_result.user_answer if question_result.user_answer else "Nicht beantwortet" }}<br>
+                {% if not question_result.is_correct %}
+                    <em>Richtige Antwort:</em> {{ question_result.correct_answer_definition }}<br>
+                {% endif %}
+                <strong>Ergebnis:</strong> {{ "Richtig" if question_result.is_correct else "Falsch" }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<br>
+<a href="{{ url_for('view_lernset', set_id=test_data.set_id) }}" class="button button-secondary">Zurück zum Lernset</a>
+<a href="{{ url_for('start_test', set_id=test_data.set_id) }}" class="button button-warning" style="margin-left:10px;">Test wiederholen</a>
+
+{% endblock %}

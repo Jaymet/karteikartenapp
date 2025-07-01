@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Zuordnungsspiel: {{ lernset.titel }}{% endblock %}
+
+{% block content %}
+<h2>Zuordnungsspiel: {{ lernset.titel }}</h2>
+<a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button-small">Zurück zum Set</a>
+
+<div id="game-instructions">
+    <p>Klicke auf einen Begriff und dann auf die passende Definition, um sie zuzuordnen.</p>
+</div>
+
+<div id="game-feedback" style="margin-bottom: 15px; font-weight: bold;"></div>
+
+<div class="matching-game-container">
+    <div class="match-column" id="terms-column">
+        <h3>Begriffe</h3>
+        {% for karte in karten_shuffled %}
+            <div class="match-item term-item" data-id="{{ karte.id }}">{{ karte.begriff }}</div>
+        {% endfor %}
+    </div>
+    <div class="match-column" id="definitions-column">
+        <h3>Definitionen</h3>
+        {% for karte in definitions_shuffled %}
+            <div class="match-item definition-item" data-id="{{ karte.id }}">{{ karte.definition }}</div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="game-completion-message" style="display:none; margin-top:20px; padding:15px; background-color:#dff0d8; border:1px solid #d6e9c6; text-align:center;">
+    <h4>Super! Alle Paare richtig zugeordnet!</h4>
+    <a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button button-secondary">Zurück zum Set</a>
+    <a href="{{ url_for('matching_game_start', set_id=lernset.id) }}" class="button" style="margin-left:10px;">Nochmal spielen</a>
+</div>
+
+<script>
+    const termsColumn = document.getElementById('terms-column');
+    const definitionsColumn = document.getElementById('definitions-column');
+    const gameFeedback = document.getElementById('game-feedback');
+    const gameCompletionMessage = document.getElementById('game-completion-message');
+
+    let selectedTerm = null;
+    let selectedDefinition = null;
+    let matchedPairs = 0;
+    const totalPairs = {{ karten_shuffled | length }};
+
+    termsColumn.addEventListener('click', function(event) {
+        if (event.target.classList.contains('term-item') && !event.target.classList.contains('matched')) {
+            if (selectedTerm) {
+                selectedTerm.classList.remove('selected');
+            }
+            selectedTerm = event.target;
+            selectedTerm.classList.add('selected');
+            gameFeedback.textContent = '';
+            checkMatch();
+        }
+    });
+
+    definitionsColumn.addEventListener('click', function(event) {
+        if (event.target.classList.contains('definition-item') && !event.target.classList.contains('matched')) {
+            if (selectedDefinition) {
+                selectedDefinition.classList.remove('selected');
+            }
+            selectedDefinition = event.target;
+            selectedDefinition.classList.add('selected');
+            gameFeedback.textContent = '';
+            checkMatch();
+        }
+    });
+
+    function checkMatch() {
+        if (selectedTerm && selectedDefinition) {
+            const termId = selectedTerm.dataset.id;
+            const definitionId = selectedDefinition.dataset.id;
+
+            if (termId === definitionId) {
+                // Correct match
+                selectedTerm.classList.add('matched', 'correct');
+                selectedDefinition.classList.add('matched', 'correct');
+
+                // Make them unclickable for further matches
+                selectedTerm.classList.remove('selected');
+                selectedDefinition.classList.remove('selected');
+
+                // Disable further clicks on matched items by changing their nature or adding overlay
+                // For simplicity, 'matched' class will prevent re-selection in event listener.
+
+                gameFeedback.textContent = 'Richtig! Gut gemacht.';
+                gameFeedback.style.color = 'green';
+
+                matchedPairs++;
+                if (matchedPairs === totalPairs) {
+                    gameCompletionMessage.style.display = 'block';
+                    gameFeedback.textContent = 'Alle Paare gefunden!';
+                }
+
+            } else {
+                // Incorrect match
+                selectedTerm.classList.add('incorrect');
+                selectedDefinition.classList.add('incorrect');
+                gameFeedback.textContent = 'Leider falsch. Versuche es nochmal.';
+                gameFeedback.style.color = 'red';
+
+                // Remove 'incorrect' and 'selected' after a delay
+                setTimeout(() => {
+                    selectedTerm.classList.remove('incorrect', 'selected');
+                    selectedDefinition.classList.remove('incorrect', 'selected');
+                    selectedTerm = null; // Reset selection
+                    selectedDefinition = null; // Reset selection
+                    if(matchedPairs < totalPairs){ // Clear feedback only if game is not over
+                        gameFeedback.textContent = '';
+                    }
+                }, 1500);
+            }
+
+            // Reset selections if not a correct persistent match
+            if (termId !== definitionId) {
+                 // setTimeout will handle removal for incorrect, so only deselect if not incorrect (which shouldn't happen here)
+            } else { // if correct match, clear selection for next pair
+                selectedTerm = null;
+                selectedDefinition = null;
+            }
+        }
+    }
+</script>
+{% endblock %}

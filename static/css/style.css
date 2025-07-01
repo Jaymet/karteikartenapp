@@ -1,0 +1,562 @@
+/* Globale Stile */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background: #333;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Spezifischere Stile können hier später hinzugefügt werden */
+.button {
+    display: inline-block;
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.button:hover {
+    background-color: #4cae4c;
+}
+
+.button-small {
+    display: inline-block;
+    background-color: #5bc0de;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-top: 5px;
+}
+
+.button-small:hover {
+    background-color: #31b0d5;
+}
+
+/* Stil für Lernset-Liste */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+ul li h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: #337ab7;
+}
+
+ul li p {
+    margin-bottom: 5px;
+}
+
+ul li small {
+    color: #777;
+}
+
+/* Stil für Karten-Liste in der Set-Ansicht */
+.card-list li {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.card-list li:last-child {
+    border-bottom: none;
+}
+
+.card-list strong {
+    color: #555;
+}
+
+/* Karteikarten-Lernmodus */
+.card-container {
+    perspective: 1000px;
+    margin: 20px auto;
+    width: 300px;
+    height: 200px;
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.card-front {
+    background-color: #fff;
+    color: #333;
+}
+
+.card-back {
+    background-color: #f0f0f0; /* Etwas anderer Hintergrund für die Rückseite */
+    color: #333;
+    transform: rotateY(180deg);
+}
+
+.card-navigation {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.card-navigation .button, .card-navigation .disabled {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.button.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Lern-Modus (Study Mode) */
+.study-card-area {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.card-term {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+.card-term h3 {
+    margin-top: 0;
+    color: #337ab7;
+}
+
+.feedback {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+
+.feedback-correct {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    color: #3c763d;
+}
+
+.feedback-incorrect {
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    color: #a94442;
+}
+
+.feedback p {
+    margin: 5px 0;
+}
+
+.feedback i { /* Für die Anzeige der korrekten Antwort */
+    color: #555;
+}
+
+/* Test Modus */
+.test-question-area {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.test-question-area h4 {
+    color: #337ab7;
+}
+
+.radio-option {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.radio-option:hover {
+    background-color: #f0f0f0;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 10px;
+}
+
+.radio-option label {
+    cursor: pointer;
+}
+
+/* Test Ergebnisse */
+.test-results-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.test-results-list li {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.test-results-list .correct-answer {
+    background-color: #dff0d8; /* Hellgrün */
+    border-left: 5px solid #5cb85c; /* Grün */
+}
+
+.test-results-list .incorrect-answer {
+    background-color: #f2dede; /* Hellrot */
+    border-left: 5px solid #d9534f; /* Rot */
+}
+
+.test-results-list strong {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.test-results-list em {
+    display: block;
+    font-size: 0.9em;
+    color: #555;
+    margin-left: 10px;
+}
+
+/* Matching Game */
+.matching-game-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.match-column {
+    width: 45%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.match-column h3 {
+    text-align: center;
+    color: #337ab7;
+    margin-top: 0;
+}
+
+.match-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.match-item:hover {
+    background-color: #e9ecef;
+    border-color: #bbb;
+}
+
+.match-item.selected {
+    background-color: #cfe2ff; /* Light blue for selected */
+    border-color: #9ec5fe;
+}
+
+.match-item.matched.correct {
+    background-color: #d4edda; /* Light green for correct match */
+    border-color: #c3e6cb;
+    color: #155724;
+    cursor: default;
+    opacity: 0.7; /* Make it look "used" */
+}
+
+.match-item.matched.correct:hover {
+     background-color: #d4edda; /* Keep color on hover */
+}
+
+
+.match-item.incorrect {
+    background-color: #f8d7da; /* Light red for incorrect attempt */
+    border-color: #f5c6cb;
+    animation: shake 0.5s; /* Shake animation for incorrect */
+}
+
+@keyframes shake {
+    0%, 100% {transform: translateX(0);}
+    25% {transform: translateX(-5px);}
+    75% {transform: translateX(5px);}
+}
+
+/* Flash Messages */
+.flash-messages {
+    padding: 0;
+    margin: 0 0 15px 0; /* Angepasster Margin */
+    list-style: none;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 15px; /* Abstand zwischen Nachrichten */
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* Formular-Styling */
+input[type="text"],
+textarea {
+    width: calc(100% - 22px); /* Berücksichtigt Padding und Border */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Wichtig für width Berechnung */
+    font-size: 1em;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+textarea {
+    resize: vertical; /* Erlaubt nur vertikales Resizing */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Button Styling - Erweiterung und Konsolidierung */
+.button, button[type="submit"] { /* Auch normale Submit-Buttons stylen */
+    display: inline-block;
+    background-color: #5cb85c; /* Grün für primäre Aktionen */
+    color: white !important; /* Wichtig, um Link-Farben zu überschreiben */
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: none; /* Für <button> Elemente */
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover, button[type="submit"]:hover {
+    background-color: #4cae4c;
+    color: white !important;
+}
+
+/* Sekundäre Buttons / Alternative Aktionen */
+.button-secondary {
+    background-color: #6c757d; /* Grau */
+}
+.button-secondary:hover {
+    background-color: #5a6268;
+}
+
+.button-info { /* Für Aktionen wie "Karten ansehen" */
+    background-color: #5bc0de; /* Hellblau */
+}
+.button-info:hover {
+    background-color: #31b0d5;
+}
+
+.button-warning { /* Für Test starten oder potenziell destruktive Aktionen */
+    background-color: #f0ad4e; /* Orange */
+}
+.button-warning:hover {
+    background-color: #ec971f;
+}
+
+.button-danger { /* Für Löschen etc. */
+    background-color: #d9534f; /* Rot */
+}
+.button-danger:hover {
+    background-color: #c9302c;
+}
+
+
+.button-small {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    /* Erbt Farben vom normalen .button, wenn nicht spezifisch überschrieben */
+}
+
+
+/* Disabled Button State - bereits vorhanden, ggf. anpassen */
+.button.disabled, button[type="submit"]:disabled {
+    background-color: #ccc !important; /* Wichtig, um andere Farben zu überschreiben */
+    color: #666 !important;
+    cursor: not-allowed;
+    /* box-shadow: none; */ /* Optional: Schatten entfernen */
+}
+
+
+/* Anpassung für Links, die wie Buttons aussehen sollen, aber keine .button Klasse haben (z.B. Abbrechen) */
+a.button-link-style {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-left: 10px;
+    text-decoration: none;
+    color: #337ab7; /* Standard Link Farbe */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+a.button-link-style:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+/* Set Statistics */
+.set-statistics {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.set-statistics h4 {
+    margin-top: 0;
+    color: #337ab7;
+}
+
+.set-statistics ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 10px;
+}
+
+.set-statistics ul li {
+    font-size: 0.95em;
+    color: #555;
+    background: none; /* Überschreibt generelle li-Stile */
+    border: none; /* Überschreibt generelle li-Stile */
+    padding: 2px 0; /* Weniger Padding als Standard-Listen */
+    box-shadow: none; /* Überschreibt generelle li-Stile */
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: .25rem;
+    height: 20px;
+    margin-top: 5px;
+}
+
+.progress-bar-learned {
+    background-color: #5cb85c; /* Grün, passend zu primären Buttons */
+    height: 100%;
+    border-radius: .25rem;
+    text-align: center;
+    color: white;
+    line-height: 20px; /* Zentriert Text vertikal, falls wir Prozente anzeigen wollen */
+    font-size: 0.8em;
+    transition: width 0.6s ease;
+}

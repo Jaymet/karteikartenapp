@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Startseite - Karteikarten App{% endblock %}
+
+{% block content %}
+<h2>Willkommen bei deiner Karteikarten App!</h2>
+
+<a href="{{ url_for('create_lernset') }}" class="button">Neues Lernset erstellen</a>
+
+<h3>Deine Lernsets</h3>
+{% if lernsets %}
+    <ul>
+        {% for lernset in lernsets %}
+            <li>
+                <h4>{{ lernset.titel }}</h4>
+                <p>{{ lernset.beschreibung }}</p>
+                <small>Anzahl Karten: {{ lernset.karten | length }}</small><br>
+                <a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button-small">Anzeigen & Karten verwalten</a>
+                {# Hier könnten später Links zur Bearbeiten, Löschen hinzukommen #}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Du hast noch keine Lernsets erstellt. <a href="{{ url_for('create_lernset') }}">Lege jetzt dein erstes an!</a></p>
+{% endif %}
+
+{% endblock %}

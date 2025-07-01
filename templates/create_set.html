@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Neues Lernset erstellen - Karteikarten App{% endblock %}
+
+{% block content %}
+<h2>Neues Lernset erstellen</h2>
+<form method="POST" action="{{ url_for('create_lernset') }}">
+    <div>
+        <label for="titel">Titel:</label><br>
+        <input type="text" id="titel" name="titel" value="{{ request.form.titel if request.form.titel else '' }}" required size="50">
+    </div>
+    <br>
+    <div>
+        <label for="beschreibung">Beschreibung (optional):</label><br>
+        <textarea id="beschreibung" name="beschreibung" rows="4" cols="50">{{ request.form.beschreibung if request.form.beschreibung else '' }}</textarea>
+    </div>
+    <br>
+    <div>
+        <button type="submit" class="button">Lernset erstellen</button>
+        <a href="{{ url_for('index') }}" class="button-link-style">Abbrechen</a>
+    </div>
+</form>
+{% endblock %}

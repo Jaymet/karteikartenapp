@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Test: {{ test_data.set_title }}{% endblock %}
+
+{% block content %}
+<h2>Test-Modus: {{ test_data.set_title }}</h2>
+<h3>Frage {{ test_data.current_question_index + 1 }} von {{ test_data.questions | length }}</h3>
+
+{% if question %}
+    <div class="test-question-area">
+        <h4>Begriff: {{ question.term }}</h4>
+        <p>Wähle die richtige Definition:</p>
+
+        <form method="POST" action="{{ url_for('submit_test_answer', set_id=test_data.set_id, q_index=test_data.current_question_index) }}">
+            {% for option in question.options %}
+            <div class="radio-option">
+                <input type="radio" id="option_{{ loop.index0 }}" name="answer" value="{{ option }}" required>
+                <label for="option_{{ loop.index0 }}">{{ option }}</label>
+            </div>
+            {% endfor %}
+            <br>
+            <button type="submit" class="button">Antwort absenden</button>
+        </form>
+    </div>
+{% else %}
+    <p>Frage nicht gefunden oder Test ist bereits beendet.</p>
+    <a href="{{ url_for('view_lernset', set_id=test_data.set_id) }}" class="button">Zurück zum Lernset</a>
+{% endif %}
+
+<hr>
+<p>Aktueller Punktestand (vor dieser Frage, falls zutreffend): {{ test_data.score }}</p>
+
+{% endblock %}

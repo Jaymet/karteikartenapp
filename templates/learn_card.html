@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Lernmodus: {{ lernset.titel }}{% endblock %}
+
+{% block content %}
+<h2>Lernmodus: {{ lernset.titel }}</h2>
+<a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button-small">Zurück zum Set</a>
+
+{% if karte %}
+    <div class="card-container">
+        <div class="card" id="lernKarte">
+            <div class="card-front">
+                <p>{{ karte.begriff }}</p>
+            </div>
+            <div class="card-back">
+                <p>{{ karte.definition }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-navigation">
+        {% if prev_card_index is not none %}
+            <a href="{{ url_for('learn_card', set_id=lernset.id, card_index=prev_card_index) }}" class="button button-secondary">Vorherige</a>
+        {% else %}
+            <span class="button button-secondary disabled">Vorherige</span>
+        {% endif %}
+
+        <button onclick="flipCard()" class="button">Umdrehen</button> {# Primäre Aktion #}
+
+        {% if next_card_index is not none %}
+            <a href="{{ url_for('learn_card', set_id=lernset.id, card_index=next_card_index) }}" class="button button-secondary">Nächste</a>
+        {% else %}
+            <span class="button button-secondary disabled">Nächste</span>
+        {% endif %}
+    </div>
+    <p style="text-align: center; margin-top: 10px;">Karte {{ current_card_number }} von {{ total_cards }}</p>
+
+{% else %}
+    <p>Keine Karten in diesem Set zum Lernen vorhanden oder Index außerhalb des Bereichs.</p>
+{% endif %}
+
+<script>
+function flipCard() {
+    document.getElementById('lernKarte').classList.toggle('is-flipped');
+}
+</script>
+
+{% endblock %}

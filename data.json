@@ -1,0 +1,60 @@
+{
+    "lernsets": [
+        {
+            "id": "set1-uuid",
+            "titel": "Hauptstädte EU",
+            "beschreibung": "Hauptstädte der Europäischen Union",
+            "karten": [
+                {
+                    "id": "card1-uuid",
+                    "begriff": "Deutschland",
+                    "definition": "Berlin",
+                    "lernfortschritt": 0
+                },
+                {
+                    "id": "card2-uuid",
+                    "begriff": "Frankreich",
+                    "definition": "Paris",
+                    "lernfortschritt": 1
+                },
+                {
+                    "id": "card3-uuid",
+                    "begriff": "Spanien",
+                    "definition": "Madrid",
+                    "lernfortschritt": 0
+                },
+                {
+                    "id": "card4-uuid",
+                    "begriff": "Italien",
+                    "definition": "Rom",
+                    "lernfortschritt": 2
+                }
+            ]
+        },
+        {
+            "id": "set2-uuid",
+            "titel": "Englisch Unregelmäßige Verben",
+            "beschreibung": "Grundformen",
+            "karten": [
+                {
+                    "id": "card5-uuid",
+                    "begriff": "to be",
+                    "definition": "was/were, been",
+                    "lernfortschritt": 0
+                },
+                {
+                    "id": "card6-uuid",
+                    "begriff": "to go",
+                    "definition": "went, gone",
+                    "lernfortschritt": 0
+                }
+            ]
+        },
+        {
+            "id": "set3-uuid",
+            "titel": "Leeres Set",
+            "beschreibung": "Ein Set ohne Karten.",
+            "karten": []
+        }
+    ]
+}

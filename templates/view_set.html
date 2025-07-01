@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lernset.titel }} - Lernset Details{% endblock %}
+
+{% block content %}
+<h2>{{ lernset.titel }}</h2>
+<p>{{ lernset.beschreibung }}</p>
+
+<div class="set-statistics">
+    <h4>Lernfortschritt für dieses Set:</h4>
+    {% if stats.total_cards > 0 %}
+        <p>
+            <strong>{{ stats.percentage_learned }}% gelernt</strong>
+            ({{ stats.cards_learned }} von {{ stats.total_cards }} Karten)
+        </p>
+        <ul>
+            <li>Neu: {{ stats.cards_new }}</li>
+            <li>In Arbeit: {{ stats.cards_in_progress }}</li>
+            <li>Gelernt: {{ stats.cards_learned }}</li>
+        </ul>
+        <div class="progress-bar-container">
+            <div class="progress-bar-learned" style="width: {{ stats.percentage_learned }}%;"></div>
+        </div>
+    {% else %}
+        <p>Füge Karten hinzu, um deinen Lernfortschritt zu sehen.</p>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('index') }}" class="button button-secondary button-small">Zurück zur Übersicht</a>
+{% if lernset.karten %}
+<a href="{{ url_for('learn_card', set_id=lernset.id, card_index=0) }}" class="button button-info button-small" style="margin-left: 10px;">Karten ansehen (Karteikarten-Modus)</a>
+<a href="{{ url_for('study_mode_card', set_id=lernset.id, card_index=0) }}" class="button" style="margin-left: 10px;">Lern-Modus (Definition schreiben)</a>
+<a href="{{ url_for('write_mode_card', set_id=lernset.id, card_index=0) }}" class="button" style="margin-left: 10px;">Schreib-Modus (Begriff schreiben)</a>
+<a href="{{ url_for('start_test', set_id=lernset.id) }}" class="button button-warning" style="margin-left: 10px;">Test-Modus starten</a>
+<a href="{{ url_for('matching_game_start', set_id=lernset.id) }}" class="button button-info" style="margin-left: 10px; background-color: #337ab7;">Zuordnungsspiel starten</a> {# Spezifische Farbe beibehalten oder button-primary verwenden #}
+{% else %}
+<p style="margin-top:10px;">Dieses Set hat noch keine Karten. Füge welche hinzu, um die Lernmodi, einen Test oder Spiele zu starten.</p>
+{% endif %}
+
+
+<hr style="margin-top: 20px; margin-bottom: 20px;">
+
+<h3>Karteikarten in diesem Set ({{ lernset.karten | length }})</h3>
+{% if lernset.karten %}
+    <ul class="card-list">
+        {% for karte in lernset.karten %}
+            <li>
+                <strong>Begriff:</strong> {{ karte.begriff }}<br>
+                <strong>Definition:</strong> {{ karte.definition }}
+                {# Hier könnten später Links zum Bearbeiten/Löschen der Karte hinzukommen #}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Noch keine Karten vorhanden.</p>
+{% endif %}
+
+<hr style="margin-top: 20px; margin-bottom: 20px;">
+
+<h3>Neue Karteikarte hinzufügen</h3>
+<form method="POST" action="{{ url_for('add_card', set_id=lernset.id) }}">
+    <div>
+        <label for="begriff">Begriff:</label><br>
+        <input type="text" id="begriff" name="begriff" required size="50">
+    </div>
+    <br>
+    <div>
+        <label for="definition">Definition:</label><br>
+        <textarea id="definition" name="definition" rows="3" cols="50" required></textarea>
+    </div>
+    <br>
+    <div>
+        <button type="submit" class="button">Karte hinzufügen</button>
+    </div>
+</form>
+
+{% endblock %}

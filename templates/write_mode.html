@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Schreib-Modus: {{ lernset.titel }}{% endblock %}
+
+{% block content %}
+<h2>Schreib-Modus: {{ lernset.titel }}</h2>
+<a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button-small">Zurück zum Set</a>
+
+{% if karte %}
+    <div class="study-card-area"> {# Wiederverwendung der CSS-Klasse, da Layout ähnlich #}
+        <div class="card-term"> {# Angepasst für Definition zuerst #}
+            <h3>Definition:</h3>
+            <p>{{ karte.definition }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('check_written_term', set_id=lernset.id, card_index=card_index) }}" id="writeForm">
+            <div>
+                <label for="user_term">Welcher Begriff passt zu dieser Definition?</label><br>
+                <input type="text" id="user_term" name="user_term" class="form-control" required size="50">
+            </div>
+            <br>
+            <button type="submit" class="button">Antwort prüfen</button>
+        </form>
+
+        {% if feedback %}
+            <div id="feedback-area" class="feedback {% if correct %}feedback-correct{% else %}feedback-incorrect{% endif %}">
+                <p><b>{{ feedback_text }}</b></p>
+                {% if not correct %}
+                    <p><i>Richtiger Begriff: {{ karte.begriff }}</i></p>
+                {% endif %}
+                 {% if next_card_index is not none %}
+                    <a href="{{ url_for('write_mode_card', set_id=lernset.id, card_index=next_card_index) }}" class="button button-secondary">Nächste Karte</a>
+                {% else %}
+                    <p>Das war die letzte Karte im Set!</p>
+                    <a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button button-secondary">Zurück zum Set</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="card-navigation" {% if feedback %}style="display:none;"{% endif %} id="navigationBeforeFeedbackWrite">
+        {% if prev_card_index is not none %}
+            <a href="{{ url_for('write_mode_card', set_id=lernset.id, card_index=prev_card_index) }}" class="button button-secondary">Vorherige</a>
+        {% else %}
+            <span class="button button-secondary disabled">Vorherige</span>
+        {% endif %}
+
+        <span class="button disabled">Antwort prüfen (erst eingeben)</span> {# Platzhalter #}
+
+        {% if next_card_index is not none %}
+            <a href="{{ url_for('write_mode_card', set_id=lernset.id, card_index=next_card_index) }}" class="button button-secondary">Nächste (ohne zu antworten)</a>
+        {% else %}
+            <span class="button button-secondary disabled">Nächste</span>
+        {% endif %}
+    </div>
+    <p style="text-align: center; margin-top: 10px;">Karte {{ current_card_number }} von {{ total_cards }}</p>
+
+{% else %}
+    <p>Keine Karten in diesem Set zum Üben vorhanden oder Index außerhalb des Bereichs.</p>
+    <a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button">Zurück zum Set</a>
+{% endif %}
+
+{% endblock %}
