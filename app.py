@@ -2,13 +2,47 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 # import data_manager # Importiere unseren data_manager -> Entfernt, da nicht benötigt
 import os # für secret_key und Dateiprüfung
 import random # For shuffling choices and selecting questions
+import json # Für JSON Operationen
+import uuid # Für UUID Generierung
 
+DATA_FILE = 'data.json' # Globale Konstante für den Dateinamen
+
+# --------------- Datenverwaltungsfunktionen ---------------
+def generate_uuid():
+    """Generiert eine eindeutige UUID als String."""
+    return str(uuid.uuid4())
+
+def load_data():
+    """Lädt die Daten aus der JSON-Datei.
+    Gibt ein Dictionary mit den Daten zurück oder ein leeres Grundgerüst, wenn die Datei nicht existiert.
+    """
+    if not os.path.exists(DATA_FILE):
+        return {"lernsets": []}
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if "lernsets" not in data or not isinstance(data["lernsets"], list):
+                return {"lernsets": []}
+            return data
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Fehler beim Laden der Daten ({DATA_FILE}): {e}")
+        return {"lernsets": []}
+
+def save_data(data):
+    """Speichert die gegebenen Daten in die JSON-Datei."""
+    try:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+    except IOError as e:
+        print(f"Fehler beim Speichern der Daten ({DATA_FILE}): {e}")
+
+# --------------- Flask App Initialisierung ---------------
 app = Flask(__name__)
 app.secret_key = os.urandom(24) # Needed for session management
 
 @app.route('/')
 def index():
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernsets = data.get("lernsets", [])
     return render_template('index.html', lernsets=lernsets)
 
@@ -22,17 +56,17 @@ def create_lernset():
             flash("Titel ist erforderlich!", "danger")
             return render_template('create_set.html'), 400 # Render again with form data
 
-        data = data_manager.load_data()
+        data = load_data() # Korrigiert
 
         new_set = {
-            "id": data_manager.generate_uuid(),
+            "id": generate_uuid(), # Korrigiert
             "titel": titel,
             "beschreibung": beschreibung,
             "karten": [] # Ein neues Set hat anfangs keine Karten
         }
 
         data["lernsets"].append(new_set)
-        data_manager.save_data(data)
+        save_data(data) # Korrigiert
         flash(f"Lernset '{titel}' erfolgreich erstellt!", "success")
         return redirect(url_for('index'))
 
@@ -40,7 +74,7 @@ def create_lernset():
 
 @app.route('/set/<set_id>')
 def view_lernset(set_id):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
     if lernset:
         stats = calculate_set_statistics(lernset)
@@ -50,7 +84,7 @@ def view_lernset(set_id):
 
 @app.route('/set/<set_id>/add_card', methods=['POST'])
 def add_card(set_id):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -65,20 +99,20 @@ def add_card(set_id):
         return redirect(url_for('view_lernset', set_id=set_id))
 
     new_card = {
-        "id": data_manager.generate_uuid(),
+        "id": generate_uuid(), # Korrigiert
         "begriff": begriff,
         "definition": definition,
         "lernfortschritt": 0
     }
 
     lernset['karten'].append(new_card)
-    data_manager.save_data(data)
+    save_data(data) # Korrigiert
     flash("Neue Karte erfolgreich zum Set hinzugefügt!", "success")
     return redirect(url_for('view_lernset', set_id=set_id))
 
 @app.route('/set/<set_id>/learn/<int:card_index>')
 def learn_card(set_id, card_index):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -116,7 +150,7 @@ def learn_card(set_id, card_index):
 
 @app.route('/set/<set_id>/study/<int:card_index>', methods=['GET'])
 def study_mode_card(set_id, card_index):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -167,7 +201,7 @@ def study_mode_card(set_id, card_index):
 
 @app.route('/set/<set_id>/study/<int:card_index>/check', methods=['POST'])
 def check_answer(set_id, card_index):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -188,11 +222,11 @@ def check_answer(set_id, card_index):
     if is_correct:
         # Optional: Lernfortschritt erhöhen
         karte['lernfortschritt'] = karte.get('lernfortschritt', 0) + 1
-        data_manager.save_data(data) # Fortschritt speichern
+        save_data(data) # Korrigiert - Fortschritt speichern
     else:
         # Optional: Lernfortschritt verringern oder als "noch zu lernen" markieren
         karte['lernfortschritt'] = max(0, karte.get('lernfortschritt', 0) - 1) # Nicht unter 0 gehen lassen
-        data_manager.save_data(data)
+        save_data(data) # Korrigiert
 
 
     # Parameter für das Feedback zusammenstellen, um sie an die GET-Route zu übergeben
@@ -208,7 +242,7 @@ def check_answer(set_id, card_index):
 
 @app.route('/set/<set_id>/write/<int:card_index>', methods=['GET'])
 def write_mode_card(set_id, card_index):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -251,7 +285,7 @@ def write_mode_card(set_id, card_index):
 
 @app.route('/set/<set_id>/write/<int:card_index>/check', methods=['POST'])
 def check_written_term(set_id, card_index):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -273,7 +307,7 @@ def check_written_term(set_id, card_index):
         karte['lernfortschritt'] = karte.get('lernfortschritt', 0) + 1
     else:
         karte['lernfortschritt'] = max(0, karte.get('lernfortschritt', 0) - 1)
-    data_manager.save_data(data)
+    save_data(data) # Korrigiert
 
     feedback_params = f"correct={is_correct}&feedback_text={feedback_text}"
 
@@ -335,7 +369,7 @@ def generate_multiple_choice_questions(lernset, num_questions=None, num_options=
 
 @app.route('/set/<set_id>/start_test')
 def start_test(set_id):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -482,7 +516,7 @@ def calculate_set_statistics(lernset):
 
 @app.route('/set/<set_id>/matching_game')
 def matching_game_start(set_id):
-    data = data_manager.load_data()
+    data = load_data() # Korrigiert
     lernset = next((s for s in data['lernsets'] if s['id'] == set_id), None)
 
     if not lernset:
@@ -520,7 +554,7 @@ if __name__ == '__main__':
     # Die load_data() Funktion in data_manager.py kümmert sich bereits darum.
     # Ein expliziter Aufruf hier ist nicht mehr zwingend nötig, wenn jede Route, die Daten braucht, sie lädt.
     # Aber es schadet auch nicht, es hier einmal beim Start zu tun.
-    if not os.path.exists(data_manager.DATA_FILE):
-        data_manager.save_data({"lernsets": []}) # Stellt sicher, dass eine leere Datei existiert
+    if not os.path.exists(DATA_FILE):
+        save_data({"lernsets": []}) # Korrigiert - Stellt sicher, dass eine leere Datei existiert
 
     app.run(debug=True)
