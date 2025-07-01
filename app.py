@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import data_manager # Importiere unseren data_manager
+# import data_manager # Importiere unseren data_manager -> Entfernt, da nicht benötigt
 import os # für secret_key und Dateiprüfung
 import random # For shuffling choices and selecting questions
 
