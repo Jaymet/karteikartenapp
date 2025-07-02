@@ -22,10 +22,16 @@ def load_data():
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
             if "lernsets" not in data or not isinstance(data["lernsets"], list):
-                return {"lernsets": []}
+                data = {"lernsets": []} # Korrigiere Struktur falls nötig
+
+            # Migration für bestehende Karten: Füge schwierigkeit_score hinzu, falls nicht vorhanden
+            for lernset in data.get("lernsets", []):
+                for karte in lernset.get("karten", []):
+                    if "schwierigkeit_score" not in karte:
+                        karte["schwierigkeit_score"] = 8 # Standardwert für migrierte Karten
             return data
     except (json.JSONDecodeError, IOError) as e:
-        print(f"Fehler beim Laden der Daten ({DATA_FILE}): {e}")
+        print(f"Fehler beim Laden der Daten ({DATA_FILE}): {e}. Erstelle leere Struktur.")
         return {"lernsets": []}
 
 def save_data(data):
@@ -35,6 +41,75 @@ def save_data(data):
             json.dump(data, f, indent=4, ensure_ascii=False)
     except IOError as e:
         print(f"Fehler beim Speichern der Daten ({DATA_FILE}): {e}")
+
+# --------------- Logik für neuen Lernmodus ---------------
+def waehle_naechste_lernkarte(lernset):
+    """
+    Wählt die nächste zu lernende Karte aus einem Set basierend auf gewichtetem Zufall.
+    Karten mit höherem 'schwierigkeit_score' haben eine höhere Wahrscheinlichkeit.
+    Gibt die ausgewählte Karte (Dictionary) oder None zurück, wenn keine Karte gewählt werden kann.
+    """
+    karten = lernset.get('karten', [])
+    if not karten:
+        return None
+
+    scores = [karte.get('schwierigkeit_score', 1) for karte in karten] # Standard-Score 1 falls nicht vorhanden (sollte nicht passieren)
+
+    # Um zu verhindern, dass Karten mit Score 0 (falls wir das später einführen) eine Chance haben,
+    # oder um die Wahrscheinlichkeit für sehr einfache Karten nicht komplett zu eliminieren,
+    # könnte man einen Mindestscore addieren oder die Scores anders behandeln.
+    # Fürs Erste: Direkte Gewichtung. Karten mit Score 0 hätten keine Chance.
+    # Wir gehen davon aus, dass Scores > 0 sind, basierend auf unserer Skala (1,2,4,8,16).
+
+    if not any(s > 0 for s in scores): # Falls alle Scores 0 oder negativ sind (unwahrscheinlich mit aktueller Logik)
+        # Wähle einfach zufällig eine Karte, um einen Stillstand zu vermeiden.
+        return random.choice(karten) if karten else None
+
+    # random.choices gibt eine Liste zurück, wir wollen nur ein Element
+    ausgewaehlte_karte_liste = random.choices(karten, weights=scores, k=1)
+    return ausgewaehlte_karte_liste[0] if ausgewaehlte_karte_liste else None
+
+bewertung_scores = {
+    "sehr_einfach": 1,
+    "einfach": 2,
+    "mittel": 4,
+    "schwer": 8,
+    "sehr_schwer": 16
+}
+
+@app.route('/lernset/<set_id>/karte/<karten_id>/bewerten', methods=['POST'])
+def bewerte_karte(set_id, karten_id):
+    data = load_data()
+    lernset = next((s for s in data.get('lernsets', []) if s['id'] == set_id), None)
+
+    if not lernset:
+        flash("Lernset nicht gefunden.", "danger")
+        return redirect(url_for('index')) # Oder eine andere passende Fehlerseite/Redirect
+
+    karte_gefunden = False
+    for karte in lernset.get('karten', []):
+        if karte['id'] == karten_id:
+            bewertung = request.form.get('bewertung') # z.B. "einfach", "schwer"
+            neuer_score = bewertung_scores.get(bewertung)
+
+            if neuer_score is not None:
+                karte['schwierigkeit_score'] = neuer_score
+                save_data(data)
+                flash(f"Karte '{karte['begriff'][:20]}...' als '{bewertung}' bewertet.", "success")
+                karte_gefunden = True
+                break
+            else:
+                flash(f"Ungültige Bewertung: {bewertung}", "danger")
+                # Bleibe auf der aktuellen Lernseite oder leite zur nächsten Karte?
+                # Für jetzt: Leite zur nächsten Karte, um nicht stecken zu bleiben.
+                return redirect(url_for('starte_neuen_lernmodus', set_id=set_id))
+
+    if not karte_gefunden:
+        flash("Karte zum Bewerten nicht im Lernset gefunden.", "danger")
+
+    # Nach der Bewertung zur nächsten Karte im neuen Lernmodus weiterleiten
+    return redirect(url_for('starte_neuen_lernmodus', set_id=set_id))
+
 
 # --------------- Flask App Initialisierung ---------------
 app = Flask(__name__)
@@ -102,7 +177,8 @@ def add_card(set_id):
         "id": generate_uuid(), # Korrigiert
         "begriff": begriff,
         "definition": definition,
-        "lernfortschritt": 0
+        "lernfortschritt": 0, # Behalten wir vorerst, könnte aber später durch das neue System abgelöst werden
+        "schwierigkeit_score": 8 # Neuer Standardwert (z.B. Mittel/Schwer)
     }
 
     lernset['karten'].append(new_card)
