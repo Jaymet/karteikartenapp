@@ -114,10 +114,10 @@ def bewerte_karte(set_id, karten_id):
         flash("Karte zum Bewerten nicht im Lernset gefunden.", "danger")
 
     # Nach der Bewertung zur nächsten Karte im neuen Lernmodus weiterleiten
-    return redirect(url_for('neuer_modus_karte_zeigen_ep', set_id=set_id)) # Muss auch hier angepasst werden
+    return redirect(url_for('neuer_modus_karte_zeigen_ep', set_id=set_id))
 
 @app.route('/lernset/<set_id>/neuer_modus_karte_zeigen', endpoint='neuer_modus_karte_zeigen_ep')
-def neuer_modus_karte_zeigen(set_id):
+def zeige_neue_karte_fuer_lernmodus(set_id): # Funktionsname geändert
     data = load_data()
     lernset = next((s for s in data.get('lernsets', []) if s['id'] == set_id), None)
 
