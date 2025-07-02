@@ -69,13 +69,19 @@ def waehle_naechste_lernkarte(lernset):
     ausgewaehlte_karte_liste = random.choices(karten, weights=scores, k=1)
     return ausgewaehlte_karte_liste[0] if ausgewaehlte_karte_liste else None
 
-bewertung_scores = {
+bewertung_scores = { # Globale Definition
     "sehr_einfach": 1,
     "einfach": 2,
     "mittel": 4,
     "schwer": 8,
     "sehr_schwer": 16
 }
+
+# --------------- Flask App Initialisierung ---------------
+app = Flask(__name__)
+app.secret_key = os.urandom(24) # Needed for session management
+
+# --------------- Routen Definitionen START ---------------
 
 @app.route('/lernset/<set_id>/karte/<karten_id>/bewerten', methods=['POST'])
 def bewerte_karte(set_id, karten_id):
