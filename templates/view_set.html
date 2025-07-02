@@ -28,7 +28,7 @@
 
 <a href="{{ url_for('index') }}" class="button button-secondary button-small">Zurück zur Übersicht</a>
 {% if lernset.karten %}
-<a href="{{ url_for('neuer_modus_karte_zeigen', set_id=lernset.id) }}" class="button" style="margin-left: 10px; background-color: #28a745;">Neuer Lernmodus (mit Bewertung)</a>
+<a href="{{ url_for('neuer_modus_karte_zeigen_ep', set_id=lernset.id) }}" class="button" style="margin-left: 10px; background-color: #28a745;">Neuer Lernmodus (mit Bewertung)</a>
 <a href="{{ url_for('learn_card', set_id=lernset.id, card_index=0) }}" class="button button-info button-small" style="margin-left: 10px;">Karten ansehen (Durchblättern)</a>
 <a href="{{ url_for('study_mode_card', set_id=lernset.id, card_index=0) }}" class="button button-secondary" style="margin-left: 10px;">Alter Lern-Modus (Definition schreiben)</a>
 <a href="{{ url_for('write_mode_card', set_id=lernset.id, card_index=0) }}" class="button button-secondary" style="margin-left: 10px;">Alter Schreib-Modus (Begriff schreiben)</a>
