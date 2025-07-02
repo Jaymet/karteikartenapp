@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Neuer Lernmodus: {{ lernset.titel }}{% endblock %}
+
+{% block content %}
+<h2>Neuer Lernmodus: {{ lernset.titel }}</h2>
+<a href="{{ url_for('view_lernset', set_id=lernset.id) }}" class="button button-secondary button-small">Zurück zum Set</a>
+
+{% if karte %}
+    <div class="card-container" style="margin-top: 20px;">
+        <div class="card" id="lernKarteNeu">
+            <div class="card-front">
+                <p>{{ karte.begriff }}</p>
+            </div>
+            <div class="card-back">
+                <p>{{ karte.definition }}</p>
+                <hr>
+                <p style="font-size: 0.9em; margin-bottom: 10px;">Wie gut konntest du diese Karte?</p>
+                <div class="bewertung-buttons">
+                    <form method="POST" action="{{ url_for('bewerte_karte', set_id=lernset.id, karten_id=karte.id) }}" style="display: inline;">
+                        <input type="hidden" name="bewertung" value="sehr_schwer">
+                        <button type="submit" class="button button-danger button-small">Sehr Schwer</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('bewerte_karte', set_id=lernset.id, karten_id=karte.id) }}" style="display: inline;">
+                        <input type="hidden" name="bewertung" value="schwer">
+                        <button type="submit" class="button button-warning button-small">Schwer</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('bewerte_karte', set_id=lernset.id, karten_id=karte.id) }}" style="display: inline;">
+                        <input type="hidden" name="bewertung" value="mittel">
+                        <button type="submit" class="button button-info button-small">Mittel</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('bewerte_karte', set_id=lernset.id, karten_id=karte.id) }}" style="display: inline;">
+                        <input type="hidden" name="bewertung" value="einfach">
+                        <button type="submit" class="button button-small" style="background-color: #5cb85c;">Einfach</button> {# Standard Grün für einfach #}
+                    </form>
+                    <form method="POST" action="{{ url_for('bewerte_karte', set_id=lernset.id, karten_id=karte.id) }}" style="display: inline;">
+                        <input type="hidden" name="bewertung" value="sehr_einfach">
+                        <button type="submit" class="button button-small" style="background-color: #4cae4c;">Sehr Einfach</button> {# Dunkleres Grün #}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="flipCardNeu()" class="button">Karte umdrehen</button>
+    </div>
+
+    {# Info zur aktuellen Karte, z.B. Score - optional für später
+    <p style="text-align: center; margin-top: 10px; font-size: 0.8em;">
+        Aktueller Schwierigkeits-Score: {{ karte.schwierigkeit_score }}
+    </p>
+    #}
+
+{% else %}
+    <p style="margin-top:20px;">Alle Karten in diesem Set wurden kürzlich gelernt oder es gibt keine Karten zum Lernen.</p>
+    <p>Du kannst <a href="{{ url_for('view_lernset', set_id=lernset.id) }}">zum Set zurückkehren</a> oder versuche es später erneut.</p>
+{% endif %}
+
+<script>
+function flipCardNeu() {
+    const cardElement = document.getElementById('lernKarteNeu');
+    cardElement.classList.toggle('is-flipped');
+    // Optional: Nach dem ersten Umdrehen den "Karte umdrehen" Button ausblenden oder ändern,
+    // da die Bewertung dann im Fokus steht.
+    // const flipButton = event.target; // Wenn der Button direkt die Funktion aufruft
+    // flipButton.style.display = 'none'; // Beispiel
+}
+</script>
+
+{% endblock %}

@@ -114,7 +114,29 @@ def bewerte_karte(set_id, karten_id):
         flash("Karte zum Bewerten nicht im Lernset gefunden.", "danger")
 
     # Nach der Bewertung zur nächsten Karte im neuen Lernmodus weiterleiten
-    return redirect(url_for('starte_neuen_lernmodus', set_id=set_id))
+    return redirect(url_for('neuer_modus_karte_zeigen', set_id=set_id)) # Angepasst an neuen Routennamen
+
+@app.route('/lernset/<set_id>/neuer_modus_karte_zeigen')
+def neuer_modus_karte_zeigen(set_id):
+    data = load_data()
+    lernset = next((s for s in data.get('lernsets', []) if s['id'] == set_id), None)
+
+    if not lernset:
+        flash("Lernset nicht gefunden.", "danger")
+        return redirect(url_for('index'))
+
+    if not lernset.get('karten'):
+        flash("Dieses Lernset enthält keine Karten, um den Lernmodus zu starten.", "info")
+        return redirect(url_for('view_lernset', set_id=set_id))
+
+    ausgewaehlte_karte = waehle_naechste_lernkarte(lernset)
+
+    if ausgewaehlte_karte is None:
+        # Sollte eigentlich durch die Prüfung oben abgedeckt sein, aber als Fallback
+        flash("Konnte keine passende Karte zum Lernen auswählen. Möglicherweise sind alle Karten perfekt gelernt oder es gab ein Problem.", "info")
+        return redirect(url_for('view_lernset', set_id=set_id))
+
+    return render_template('neuer_lernmodus.html', lernset=lernset, karte=ausgewaehlte_karte)
 
 
 # --------------- Flask App Initialisierung ---------------

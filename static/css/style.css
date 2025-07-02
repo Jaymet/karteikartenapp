@@ -560,3 +560,20 @@ a.button-link-style:hover {
     font-size: 0.8em;
     transition: width 0.6s ease;
 }
+
+/* Neuer Lernmodus - Bewertungsbuttons */
+.bewertung-buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap; /* Falls Buttons auf kleinen Screens umbrechen müssen */
+    justify-content: center;
+    gap: 10px; /* Abstand zwischen den Buttons */
+}
+
+.bewertung-buttons form {
+    display: inline-block; /* Sicherstellen, dass Forms nebeneinander sind */
+}
+
+/* Das .card-container, .card, .card-front, .card-back, .is-flipped Styling */
+/* wird vom bestehenden Karteikarten-Lernmodus wiederverwendet. */
+/* Ggf. spezifische Anpassungen für #lernKarteNeu, falls nötig. */
